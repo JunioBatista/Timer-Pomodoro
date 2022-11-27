@@ -34,12 +34,17 @@ export function Home() {
     },
   })
 
-  const { register, handleSubmit, watch /*,  reset */ } = newCycleForm
-
+  const { register, handleSubmit, watch, reset } = newCycleForm
   const task = watch('task')
+
+  function handleCreateNewCycle(data: newCycleFormData) {
+    createNewCycle(data)
+    reset()
+  }
+
   return (
     <HomeContainer>
-      <form onSubmit={handleSubmit(createNewCycle)}>
+      <form onSubmit={handleSubmit(handleCreateNewCycle)}>
         <NewCycleForm register={register} />
         <Countdown />
         {activeCycle ? (
