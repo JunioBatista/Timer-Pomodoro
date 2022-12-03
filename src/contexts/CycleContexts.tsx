@@ -1,13 +1,10 @@
-import { createContext, ReactNode, useState } from 'react'
-
-interface Cycle {
-  id: string
-  task: string
-  minutesAmount: number
-  start: Date
-  interruptedDate?: Date
-  finishedDate?: Date
-}
+import { createContext, ReactNode, useReducer, useState } from 'react'
+import {
+  addNewCycleAction,
+  finishCycleAction,
+  InterruptCurrentCycleAction,
+} from '../reducers/cycles/actions'
+import { Cycle, cyclesReducer } from '../reducers/cycles/reducer'
 
 interface CreateCyclesData {
   task: string
@@ -34,9 +31,14 @@ export const CyclesContext = createContext({} as CyclesContextType)
 export function CyclesContextProvider({
   children,
 }: CyclesContextProviderProps) {
-  const [cycles, setCycles] = useState<Cycle[]>([])
-  const [activeCycleID, setActiveCycleID] = useState<string | null>(null)
+  const [cyclesState, dispatch] = useReducer(cyclesReducer, {
+    cycles: [],
+    activeCycleID: null,
+  })
+
   const [amountSecondsPassed, setAmountSecondsPassed] = useState(0)
+
+  const { cycles, activeCycleID } = cyclesState
 
   const activeCycle = cycles.find((item) => item.id === activeCycleID)
 
@@ -45,15 +47,7 @@ export function CyclesContextProvider({
   }
 
   function markCurrentCycleAsFinished() {
-    setCycles((state) =>
-      state.map((cycle) => {
-        if (cycle.id === activeCycleID) {
-          return { ...cycle, finishedDate: new Date() }
-        } else {
-          return cycle
-        }
-      }),
-    )
+    dispatch(finishCycleAction(activeCycleID))
   }
 
   function createNewCycle(data: CreateCyclesData) {
@@ -64,22 +58,13 @@ export function CyclesContextProvider({
       start: new Date(),
     }
 
-    setCycles([...cycles, newCycle])
-    setActiveCycleID(newCycle.id)
+    dispatch(addNewCycleAction(newCycle))
+
     setAmountSecondsPassed(0)
   }
 
   function interruptCurrentCycle() {
-    setCycles((state) =>
-      state.map((cycle) => {
-        if (cycle.id === activeCycleID) {
-          return { ...cycle, interruptedDate: new Date() }
-        } else {
-          return cycle
-        }
-      }),
-    )
-    setActiveCycleID(null)
+    dispatch(InterruptCurrentCycleAction(activeCycleID))
   }
 
   return (
