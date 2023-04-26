@@ -1,7 +1,7 @@
 # Timer-Pomodoro
 
-Projeto desenvolvido atraves de aulas para aprofundar e firmar os conhecimentos com as tecnologias que foram utilizadas.
-que foram: 
+Projeto desenvolvido atraves de aulas para aprofundar e firmar os conhecimentos com as tecnologias que foram utilizadas:
+
 - React
 - Typescript
 - HTML 
